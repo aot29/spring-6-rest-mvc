@@ -1,6 +1,5 @@
 package guru.springframework.spring6RestMvc.services;
 
-import guru.springframework.spring6RestMvc.controller.BeerController;
 import guru.springframework.spring6RestMvc.model.Beer;
 import guru.springframework.spring6RestMvc.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +8,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -96,8 +92,8 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public Beer getBeerById(UUID id) {
-        return beerMap.get(id);
+    public Optional<Beer> getBeerById(UUID id) {
+        return Optional.of(beerMap.get(id));
     }
 
     @Override

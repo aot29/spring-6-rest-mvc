@@ -15,15 +15,18 @@ import java.util.UUID;
 @Slf4j
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v1/customer")
+
 public class CustomerController {
+    public static final String CUSTOMER_PATH = "/api/v1/customer/";
+    public static final String CUSTOMER_PATH_ID = CUSTOMER_PATH + "{customerId}";
+
     private final CustomerService customerService;
 
     /**
      * Example
      * curl -H "Content-Type: application/json" --request PATCH --data '{"customerName":"Bob PATCHED"}' http://localhost:8080/api/v1/customer/uuid-xxx
      * */
-    @PatchMapping("{customerId}")
+    @PatchMapping(CUSTOMER_PATH_ID)
     public ResponseEntity patchCustomer(@PathVariable UUID customerId, @RequestBody Customer customer) {
         customerService.patchCustomerById(customerId, customer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -33,7 +36,7 @@ public class CustomerController {
      * Example:
      * curl -H "Content-Type: application/json" --request DELETE http://localhost:8080/api/v1/customer/fc2b532d-734d-4d52-8e6d-279cca7ce201
      * */
-    @DeleteMapping("{customerId}")
+    @DeleteMapping(CUSTOMER_PATH_ID)
     public ResponseEntity deleteById(@PathVariable("customerId") UUID customerId) {
         customerService.deleteById(customerId);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
@@ -43,13 +46,13 @@ public class CustomerController {
      * Example
      * curl -H "Content-Type: application/json" --request PUT --data '{"customerName":"Bob UPDATED"}' http://localhost:8080/api/v1/customer/uuid-xxx
      * */
-    @PutMapping("{customerId}")
+    @PutMapping(CUSTOMER_PATH_ID)
     public ResponseEntity updateCustomer(@PathVariable UUID customerId, @RequestBody Customer customer) {
         customerService.updateCustomerById(customerId, customer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping
+    @PostMapping(CUSTOMER_PATH)
     public ResponseEntity handlePost(@RequestBody Customer customer) {
         Customer savedCustomer = customerService.saveCustomer(customer);
         HttpHeaders headers = new HttpHeaders();
@@ -57,14 +60,15 @@ public class CustomerController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping(CUSTOMER_PATH)
     public List<Customer> listCustomers() {
         log.debug("list customers requested");
         return customerService.listCustomers();
     }
 
-    @RequestMapping(value = "{customerId}", method = RequestMethod.GET)
+    @GetMapping(CUSTOMER_PATH_ID)
     public Customer getCustomerById(@PathVariable("customerId")UUID id) {
-        return customerService.getCustomerById(id);
+
+        return customerService.getCustomerById(id).orElseThrow(NotFoundException::new);
     }
 }
